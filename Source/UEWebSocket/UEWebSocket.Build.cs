@@ -14,7 +14,7 @@ namespace UnrealBuildTool.Rules
 
 			PrivateIncludePaths.AddRange(
 				new string[] {
-					"Developer/UEWebSocket/Private",
+					"Private",
 					// ... add other private include paths required here ...
 				}
 				);
@@ -23,6 +23,8 @@ namespace UnrealBuildTool.Rules
 				new string[]
 				{
 					"Core",
+                    "CoreUObject",
+                    "Engine",
 					// ... add other public dependencies that you statically link with here ...
 				}
 				);
