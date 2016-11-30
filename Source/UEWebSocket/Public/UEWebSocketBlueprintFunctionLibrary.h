@@ -9,8 +9,8 @@ class UUEWebSocketBlueprintFunctionLibrary : public UBlueprintFunctionLibrary
 
     GENERATED_UCLASS_BODY()
 
-    UFUNCTION(BlueprintPure, meta = (HidePin = "WorldContextObject", DefaultToSelf = "WorldContextObject", DisplayName = "Create UEWebSocketInst", CompactNodeTitle = "UEWebSocketInst", Keywords = "new create mars UEWebSocket inst"), Category = UEWebSocket)
-        static UUEWebSocketInst* NewUEWebSocketInst(UObject* WorldContextObject);
+    UFUNCTION(BlueprintPure, meta = (HidePin = "WorldContextObject", DefaultToSelf = "WorldContextObject", DisplayName = "Create WebSocket", CompactNodeTitle = "WebSocket", Keywords = "new create WebSocket"), Category = UEWebSocket)
+        static UWebSocketWrap* NewWebSocket(UObject* WorldContextObject);
 
 
 

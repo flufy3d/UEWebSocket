@@ -7,11 +7,11 @@ UUEWebSocketBlueprintFunctionLibrary::UUEWebSocketBlueprintFunctionLibrary(const
 
 }
 
-UUEWebSocketInst* UUEWebSocketBlueprintFunctionLibrary::NewUEWebSocketInst(UObject* WorldContextObject)
+UWebSocketWrap* UUEWebSocketBlueprintFunctionLibrary::NewWebSocket(UObject* WorldContextObject)
 {
 
     UWorld* World = GEngine->GetWorldFromContextObject(WorldContextObject);
-    UUEWebSocketInst* tempObject = Cast<UUEWebSocketInst>(StaticConstructObject_Internal(UUEWebSocketInst::StaticClass()));
+    UWebSocketWrap* tempObject = Cast<UWebSocketWrap>(StaticConstructObject_Internal(UWebSocketWrap::StaticClass()));
 
     return tempObject;
 

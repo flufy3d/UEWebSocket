@@ -27,4 +27,4 @@ void FUEWebSocket::ShutdownModule()
 }
 
 
-
+DEFINE_LOG_CATEGORY(LogUEWebSocket);
