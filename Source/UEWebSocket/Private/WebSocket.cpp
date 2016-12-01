@@ -97,7 +97,9 @@ bool FWebSocket::Send(uint8* Data, uint32 Size)
 	//this is for continue get data.the data is big ,so need write length in first int32.
 	//Buffer.Append((uint8*)&Size, sizeof (uint32));
 
+
 	Buffer.Append((uint8*)Data, Size);
+
 
 
 	//Buffer.Append((uint8*)&POSTPADDING, sizeof(POSTPADDING));
@@ -200,30 +202,32 @@ void FWebSocket::OnRawRecieve(void* Data, uint32 Size)
 
 void FWebSocket::OnRawWebSocketWritable(WebSocketInternal* wsi)
 {
+
 	if (OutgoingBuffer.Num() == 0)
 		return;
 
 	TArray <uint8>& Packet = OutgoingBuffer[0];
 
 
-
 	uint32 TotalDataSize = Packet.Num();
-	uint32 DataToSend = TotalDataSize;
-	while (DataToSend)
-	{
 
-		int Sent = libwebsocket_write(Wsi, Packet.GetData() + (DataToSend-TotalDataSize), DataToSend, (libwebsocket_write_protocol)LWS_WRITE_TEXT);
-		if (Sent < 0)
-		{
-			ErrorCallBack.ExecuteIfBound();
-			return;
-		}
-		if ((uint32)Sent < DataToSend)
-		{
-			UE_LOG(LogUEWebSocket, Warning, TEXT("Could not write all '%d' bytes to socket"), DataToSend);
-		}
-		DataToSend-=Sent;
+	if (TotalDataSize > 2048)
+	{
+		UE_LOG(LogUEWebSocket, Error, TEXT("send data size exceed 2048"));
+		ErrorCallBack.ExecuteIfBound();
+		return;
 	}
+
+	uint8 buf[2048];
+	memcpy(buf, Packet.GetData(), TotalDataSize);
+
+	int Sent = libwebsocket_write(Wsi, buf, TotalDataSize, (libwebsocket_write_protocol)LWS_WRITE_TEXT);
+	if (Sent < 0)
+	{
+		ErrorCallBack.ExecuteIfBound();
+		return;
+	}
+
 
 	check(Wsi == wsi);
 
