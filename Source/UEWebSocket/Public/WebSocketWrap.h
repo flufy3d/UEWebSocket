@@ -4,6 +4,8 @@
 class FWebSocket;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FWebsocketPacketRecievedCallBackBP,const FString&, Data);
+DECLARE_DELEGATE_OneParam(FWebsocketPacketRecievedCallBackCPP, const FString&);
+
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FWebsocketInfoCallBackBP);
 
 
@@ -20,6 +22,10 @@ public:
 	// Initialize function, should be called after properties are set 
 	UFUNCTION(BlueprintCallable, Category = "UEWebSocket", meta = (WorldContext = "WorldContextObject"))
 		void Init(UObject* WorldContextObject);
+
+
+	//this is call from CPP
+		void Init();
 
 	UFUNCTION(BlueprintCallable, Category = "UEWebSocket")
 		void Send(const FString& data);
@@ -40,11 +46,14 @@ public:
 	UPROPERTY(BlueprintAssignable)
 		FWebsocketPacketRecievedCallBackBP PacketRecievedCallBack;
 
+	FWebsocketPacketRecievedCallBackCPP PacketRecievedCallBackCPP;
+
 
 
 private:
 	
 	void OnPacketRecieved(void* Data, int32 Count);
+	void OnPacketRecievedCPP(void* Data, int32 Count);
 
 	void OnConnected();
 

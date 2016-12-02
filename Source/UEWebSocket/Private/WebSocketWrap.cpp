@@ -15,6 +15,13 @@ void UWebSocketWrap::OnPacketRecieved(void* Data, int32 Count)
 	
 }
 
+void UWebSocketWrap::OnPacketRecievedCPP(void* Data, int32 Count)
+{
+	FString _tmp = FString(Count, ANSI_TO_TCHAR((char*)Data));
+	PacketRecievedCallBackCPP.ExecuteIfBound(_tmp);
+
+}
+
 void UWebSocketWrap::OnConnected()
 {
 	ConnectedCallBack.Broadcast();
@@ -41,6 +48,22 @@ void UWebSocketWrap::Init(UObject* WorldContextObject)
 	errorCallBack.BindUObject(this, &UWebSocketWrap::OnError);
 	websocket->SetErrorCallBack(errorCallBack);
 
+}
+void UWebSocketWrap::Init()
+{
+	websocket = new FWebSocket(URL, Port);
+
+	FWebsocketPacketRecievedCallBack CallBack;
+	CallBack.BindUObject(this, &UWebSocketWrap::OnPacketRecievedCPP);
+	websocket->SetRecieveCallBack(CallBack);
+
+	FWebsocketInfoCallBack  connectedCallBack;
+	connectedCallBack.BindUObject(this, &UWebSocketWrap::OnConnected);
+	websocket->SetConnectedCallBack(connectedCallBack);
+
+	FWebsocketInfoCallBack  errorCallBack;
+	errorCallBack.BindUObject(this, &UWebSocketWrap::OnError);
+	websocket->SetErrorCallBack(errorCallBack);
 }
 
 
