@@ -1,7 +1,7 @@
 #pragma once
 #include "WebSocketWrap.generated.h"
 
-class FWebSocket;
+class FMyWebSocket;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FWebsocketPacketRecievedCallBackBP,const FString&, Data);
 DECLARE_DELEGATE_OneParam(FWebsocketPacketRecievedCallBackCPP, const FString&);
@@ -59,7 +59,7 @@ private:
 
 	void OnError();
 
-	FWebSocket* websocket;
+	FMyWebSocket* websocket;
 
 	void Tick(float DeltaTime) override;
 	bool IsTickable() const override;

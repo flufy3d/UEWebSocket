@@ -19,7 +19,7 @@
 // a object of this type is associated by libwebsocket to every connected session. 
 struct PerSessionDataServer
 {
-	FWebSocket *Socket; // each session is actually a socket to a client
+	FMyWebSocket *Socket; // each session is actually a socket to a client
 };
 
 
@@ -35,26 +35,26 @@ static int unreal_networking_server(
 );
 
 #if !UE_BUILD_SHIPPING
-	void libwebsocket_debugLog(int level, const char *line)
+	void libwebsocket_debugLogSS(int level, const char *line)
 	{ 
 		UE_LOG(LogUEWebSocket, Log, TEXT("websocket server: %s"), ANSI_TO_TCHAR(line));
 	}
 #endif 
 
 
-bool FWebSocketServer::Init(uint32 Port, FWebsocketClientConnectedCallBack CallBack)
+bool FMyWebSocketServer::Init(uint32 Port, FWebsocketClientConnectedCallBack CallBack)
 {
 
 	// setup log level.
 #if !UE_BUILD_SHIPPING
-	lws_set_log_level(LLL_ERR | LLL_WARN | LLL_NOTICE | LLL_DEBUG | LLL_INFO, libwebsocket_debugLog);
+	lws_set_log_level(LLL_ERR | LLL_WARN | LLL_NOTICE | LLL_DEBUG | LLL_INFO, libwebsocket_debugLogSS);
 #endif 
 
 	Protocols = new libwebsocket_protocols[3];
 	FMemory::Memzero(Protocols, sizeof(libwebsocket_protocols) * 3);
 
 	Protocols[0].name = "binary";
-	Protocols[0].callback = FWebSocket::unreal_networking_server;
+	Protocols[0].callback = FMyWebSocket::unreal_networking_server;
 	Protocols[0].per_session_data_size = sizeof(PerSessionDataServer);
 	Protocols[0].rx_buffer_size = 10 * 1024 * 1024;
 
@@ -90,7 +90,7 @@ bool FWebSocketServer::Init(uint32 Port, FWebsocketClientConnectedCallBack CallB
 	return true; 
 }
 
-bool FWebSocketServer::Tick()
+bool FMyWebSocketServer::Tick()
 {
 
 	{
@@ -101,10 +101,10 @@ bool FWebSocketServer::Tick()
 	return true;
 }
 
-FWebSocketServer::FWebSocketServer()
+FMyWebSocketServer::FMyWebSocketServer()
 {}
 
-FWebSocketServer::~FWebSocketServer()
+FMyWebSocketServer::~FMyWebSocketServer()
 {
 
 	if (Context)
@@ -119,7 +119,7 @@ FWebSocketServer::~FWebSocketServer()
 	
 }
 
-FString FWebSocketServer::Info()
+FString FMyWebSocketServer::Info()
 {
 	return FString(ANSI_TO_TCHAR(libwebsocket_canonical_hostname(Context)));
 
@@ -127,7 +127,7 @@ FString FWebSocketServer::Info()
 
 // callback. 
 
-int FWebSocket::unreal_networking_server
+int FMyWebSocket::unreal_networking_server
 	(
 		struct libwebsocket_context *Context, 
 		struct libwebsocket *Wsi, 
@@ -138,13 +138,13 @@ int FWebSocket::unreal_networking_server
 	)
 {
 	PerSessionDataServer* BufferInfo = (PerSessionDataServer*)User;
-	FWebSocketServer* Server = (FWebSocketServer*)libwebsocket_context_user(Context);
+	FMyWebSocketServer* Server = (FMyWebSocketServer*)libwebsocket_context_user(Context);
 
 	switch (Reason)
 	{
 		case LWS_CALLBACK_ESTABLISHED: 
 			{
-				BufferInfo->Socket = new FWebSocket(Context, Wsi);
+				BufferInfo->Socket = new FMyWebSocket(Context, Wsi);
 				Server->ConnectedCallBack.ExecuteIfBound(BufferInfo->Socket);
 				libwebsocket_set_timeout(Wsi, NO_PENDING_TIMEOUT, 0);
 			}

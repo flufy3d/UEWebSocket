@@ -5,19 +5,19 @@
 #pragma  once
 #include "UEWebSocketPrivatePCH.h"
 
-class FWebSocket
+class FMyWebSocket
 {
 
 public: 
 
 	// Initialize as client side socket. 
-	FWebSocket(const FString& url,int port);
+	FMyWebSocket(const FString& url,int port);
 
 	// Initialize as server side socket. 
-	FWebSocket(WebSocketInternalContext* InContext, WebSocketInternal* Wsi);
+	FMyWebSocket(WebSocketInternalContext* InContext, WebSocketInternal* Wsi);
 
 	// clean up. 
-	~FWebSocket();
+	~FMyWebSocket();
 
 	/************************************************************************/
 	/* Set various callbacks for Socket Events                              */           
@@ -37,6 +37,10 @@ public:
 	/** Helper functions to describe end points. */
 	FString RemoteEndPoint();
 	FString LocalEndPoint(); 
+
+	/* libwebsocket service functions */
+	static int unreal_networking_server(struct libwebsocket_context *, struct libwebsocket *wsi, enum libwebsocket_callback_reasons reason, void *user, void *in, size_t len);
+	static int unreal_networking_client(struct libwebsocket_context *, struct libwebsocket *wsi, enum libwebsocket_callback_reasons reason, void *user, void *in, size_t len);
 
 private:
 
@@ -67,9 +71,6 @@ private:
 	/** Server side socket or client side*/
 	bool IsServerSide; 
 
-	/* libwebsocket service functions */ 
-	static int unreal_networking_server(struct libwebsocket_context *, struct libwebsocket *wsi, enum libwebsocket_callback_reasons reason, void *user, void *in, size_t len);
-	static int unreal_networking_client(struct libwebsocket_context *, struct libwebsocket *wsi, enum libwebsocket_callback_reasons reason, void *user, void *in, size_t len);
 
 	friend class FWebSocketServer;
 	int SockFd;

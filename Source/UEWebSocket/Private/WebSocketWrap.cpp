@@ -34,7 +34,7 @@ void UWebSocketWrap::OnError()
 
 void UWebSocketWrap::Init(UObject* WorldContextObject)
 {
-	websocket = new FWebSocket(URL,Port);
+	websocket = new FMyWebSocket(URL,Port);
 
 	FWebsocketPacketRecievedCallBack CallBack;
 	CallBack.BindUObject(this, &UWebSocketWrap::OnPacketRecieved);
@@ -51,7 +51,7 @@ void UWebSocketWrap::Init(UObject* WorldContextObject)
 }
 void UWebSocketWrap::Init()
 {
-	websocket = new FWebSocket(URL, Port);
+	websocket = new FMyWebSocket(URL, Port);
 
 	FWebsocketPacketRecievedCallBack CallBack;
 	CallBack.BindUObject(this, &UWebSocketWrap::OnPacketRecievedCPP);

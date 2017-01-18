@@ -5,12 +5,12 @@
 #pragma  once
 #include "UEWebSocketPrivatePCH.h"
 
-class FWebSocketServer
+class FMyWebSocketServer
 {
 public:
 
-	FWebSocketServer(); 
-	~FWebSocketServer();
+	FMyWebSocketServer(); 
+	~FMyWebSocketServer();
 
 	/** Create a web socket server*/
 	bool Init(uint32 Port, FWebsocketClientConnectedCallBack);
@@ -32,7 +32,7 @@ private:
 	/** Protocols serviced by this implementation */
 	WebSocketInternalProtocol* Protocols;
 
-	friend class FWebSocket;
+	friend class FMyWebSocket;
 };
 
 
