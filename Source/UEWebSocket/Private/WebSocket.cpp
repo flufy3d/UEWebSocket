@@ -10,7 +10,7 @@
 
 
 #include "libwebsockets.h"
-#include "private-libwebsockets.h"
+//#include "private-libwebsockets.h"
 
 
 #if PLATFORM_WINDOWS
@@ -19,8 +19,8 @@
 
 
 
-uint8 PREPADDING[LWS_SEND_BUFFER_PRE_PADDING];
-uint8 POSTPADDING[LWS_SEND_BUFFER_POST_PADDING];
+uint8 MYPREPADDING[LWS_SEND_BUFFER_PRE_PADDING];
+uint8 MYPOSTPADDING[LWS_SEND_BUFFER_POST_PADDING];
 
 
 
@@ -30,7 +30,7 @@ static void libwebsocket_debugLogS(int level, const char *line)
 }
 
 
-FWebSocket::FWebSocket(const FString& url, int port)
+FMyWebSocket::FMyWebSocket(const FString& url, int port)
 :IsServerSide(false)
 {
 
@@ -44,7 +44,7 @@ FWebSocket::FWebSocket(const FString& url, int port)
 	FMemory::Memzero(Protocols, sizeof(libwebsocket_protocols) * 3);
 
 	Protocols[0].name = "binary";
-	Protocols[0].callback = FWebSocket::unreal_networking_client;
+	Protocols[0].callback = FMyWebSocket::unreal_networking_client;
 	Protocols[0].per_session_data_size = 0;
 	Protocols[0].rx_buffer_size = 10 * 1024 * 1024;
 
@@ -77,7 +77,7 @@ FWebSocket::FWebSocket(const FString& url, int port)
 
 }
 
-FWebSocket::FWebSocket(WebSocketInternalContext* InContext, WebSocketInternal* InWsi)
+FMyWebSocket::FMyWebSocket(WebSocketInternalContext* InContext, WebSocketInternal* InWsi)
 	: Context(InContext)
 	, Wsi(InWsi)
 	, IsServerSide(true)
@@ -86,13 +86,13 @@ FWebSocket::FWebSocket(WebSocketInternalContext* InContext, WebSocketInternal* I
 }
 
 
-bool FWebSocket::Send(uint8* Data, uint32 Size)
+bool FMyWebSocket::Send(uint8* Data, uint32 Size)
 {
 	TArray<uint8> Buffer;
 	// insert size. 
 
 
-	//Buffer.Append((uint8*)&PREPADDING, sizeof(PREPADDING));
+	//Buffer.Append((uint8*)&MYPREPADDING, sizeof(MYPREPADDING));
 
 	//this is for continue get data.the data is big ,so need write length in first int32.
 	//Buffer.Append((uint8*)&Size, sizeof (uint32));
@@ -102,7 +102,7 @@ bool FWebSocket::Send(uint8* Data, uint32 Size)
 
 
 
-	//Buffer.Append((uint8*)&POSTPADDING, sizeof(POSTPADDING));
+	//Buffer.Append((uint8*)&MYPOSTPADDING, sizeof(MYPOSTPADDING));
 
 
 	OutgoingBuffer.Add(Buffer);
@@ -110,12 +110,12 @@ bool FWebSocket::Send(uint8* Data, uint32 Size)
 	return true;
 }
 
-void FWebSocket::SetRecieveCallBack(FWebsocketPacketRecievedCallBack CallBack)
+void FMyWebSocket::SetRecieveCallBack(FWebsocketPacketRecievedCallBack CallBack)
 {
 	RecievedCallBack = CallBack; 
 }
 
-FString FWebSocket::RemoteEndPoint()
+FString FMyWebSocket::RemoteEndPoint()
 {
 	ANSICHAR Peer_Name[128];
 	ANSICHAR Peer_Ip[128];
@@ -125,17 +125,17 @@ FString FWebSocket::RemoteEndPoint()
 }
 
 
-FString FWebSocket::LocalEndPoint()
+FString FMyWebSocket::LocalEndPoint()
 {
 	return FString(ANSI_TO_TCHAR(libwebsocket_canonical_hostname(Context)));
 }
 
-void FWebSocket::Tick()
+void FMyWebSocket::Tick()
 {
 	HandlePacket();
 }
 
-void FWebSocket::HandlePacket()
+void FMyWebSocket::HandlePacket()
 {
 
 	{
@@ -147,7 +147,7 @@ void FWebSocket::HandlePacket()
 
 }
 
-void FWebSocket::Flush()
+void FMyWebSocket::Flush()
 {
 	auto PendingMesssages = OutgoingBuffer.Num();
 	while (OutgoingBuffer.Num() > 0 && !IsServerSide)
@@ -167,17 +167,17 @@ void FWebSocket::Flush()
 	};
 }
 
-void FWebSocket::SetConnectedCallBack(FWebsocketInfoCallBack CallBack)
+void FMyWebSocket::SetConnectedCallBack(FWebsocketInfoCallBack CallBack)
 {
 	ConnectedCallBack = CallBack; 
 }
 
-void FWebSocket::SetErrorCallBack(FWebsocketInfoCallBack CallBack)
+void FMyWebSocket::SetErrorCallBack(FWebsocketInfoCallBack CallBack)
 {
 	ErrorCallBack = CallBack; 
 }
 
-void FWebSocket::OnRawRecieve(void* Data, uint32 Size)
+void FMyWebSocket::OnRawRecieve(void* Data, uint32 Size)
 {
 	RecievedCallBack.ExecuteIfBound(Data, Size);
 	/* this is for continue get data.the data is big ,so need write length in first int32.
@@ -200,7 +200,7 @@ void FWebSocket::OnRawRecieve(void* Data, uint32 Size)
 
 }
 
-void FWebSocket::OnRawWebSocketWritable(WebSocketInternal* wsi)
+void FMyWebSocket::OnRawWebSocketWritable(WebSocketInternal* wsi)
 {
 
 	if (OutgoingBuffer.Num() == 0)
@@ -236,7 +236,7 @@ void FWebSocket::OnRawWebSocketWritable(WebSocketInternal* wsi)
 
 }
 
-FWebSocket::~FWebSocket()
+FMyWebSocket::~FMyWebSocket()
 {
 	RecievedCallBack.Unbind();
 	Flush();
@@ -249,7 +249,7 @@ FWebSocket::~FWebSocket()
 	}
 }
 
-int FWebSocket::unreal_networking_client(
+int FMyWebSocket::unreal_networking_client(
 		struct libwebsocket_context *Context, 
 		struct libwebsocket *Wsi, 
 		enum libwebsocket_callback_reasons Reason, 
@@ -257,7 +257,7 @@ int FWebSocket::unreal_networking_client(
 		void *In, 
 		size_t Len)
 {
-	FWebSocket* Socket = (FWebSocket*)libwebsocket_context_user(Context);;
+	FMyWebSocket* Socket = (FMyWebSocket*)libwebsocket_context_user(Context);;
 	switch (Reason)
 	{
 	case LWS_CALLBACK_CLIENT_ESTABLISHED:
